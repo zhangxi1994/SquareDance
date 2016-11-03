@@ -1,5 +1,4 @@
 # SquareDance
-PPS-Project 4
 Solving the Squredance problem for COMS 4444.
 
 # Collaborating on GitHub
