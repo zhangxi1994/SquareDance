@@ -29,11 +29,6 @@ The dance caller gets moment-to-moment measures of the dancers' enjoyment, from 
 
 **The goal of the dance caller is to dynamically choreograph a 3-hour dance to maximize the minimum enjoyment level of the dancers. In other words, you are scored by how well the least happy dancer fared at the dance. The choreography includes both the initial locations of all participants, as well as the movements of the participants over time.**
 
-Some initial things to think about:
-
-How might the caller estimate parameters like f after the dance has been going a short time?
-What kind of partner circulation is likely to optimize the given metric?
-If the dance floor is so crowded that not everbody can dance, how do you make sure that the nondancers don't feel claustrophobic?
 
 # Collaborating on GitHub
 
