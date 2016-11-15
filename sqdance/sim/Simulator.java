@@ -27,12 +27,12 @@ class Simulator {
 
 	public static void main(String[] args) {
 		int friends = 10;
-		int participants = 2000;
+		int participants = 1600;
 		boolean verbose = false;
 		int room_side = 20;
 		int turns = 1800;
 		boolean gui = false;
-		long gui_refresh = 2000;
+		long gui_refresh = 1;
 		String[] groups = null;
 		PrintStream out = null;
 		Class<Player> player_class = null;
