@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# Remember to give credit to group 6 :)
+# Written by: Chengyu Lin of group 6
+
 import sys,os
 import subprocess
 
