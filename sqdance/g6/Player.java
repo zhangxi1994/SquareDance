@@ -16,7 +16,7 @@ import sqdance.sim.Point;
 public class Player implements sqdance.sim.Player {
 	// For round table strategy the upper bound of dancer number is 1520
 	// When dancer more than 800 use RoundTableGreedyplayer
-	private static int THRESHOLD1 = 900;
+	private static int THRESHOLD1 = 980;
 	private static int THRESHOLD2 = 1840;
 	
 	private RoundTablePlayer p1 = new RoundTablePlayer();
