@@ -18,8 +18,6 @@ public class RoundTablePlayer implements sqdance.sim.Player {
 	private final double grid_length = 0.5;
 	private final double fluctuation = 0.001;
 
-	// Indicate whether a cell is occupier
-	private int[] occupier;
 
 	private Point[][] round_table;
 
@@ -30,16 +28,21 @@ public class RoundTablePlayer implements sqdance.sim.Player {
 
 	// permutation 0: even; 1: odd
 	private int permutation = 0;
-	// Indicate whether a player is in the round table
-	private boolean[] in_round_table;
 	// mode 1: detect; mode 0: move
 	private int mode = 0;
 	// In mode 1: target of each player
 	private Point[] target;
+
+	// Indicate whether a player is in the round table
+	private boolean[] in_round_table;
 	// player at each position
 	private List<Integer> round_table_list;
 	// position of each player
 	private int[] position;
+	// id of a player at certain position
+	private int[] occupier;
+	// used in max flow part
+	private boolean[] vis;
 
     //private int[] idle_turns;
 
@@ -48,10 +51,15 @@ public class RoundTablePlayer implements sqdance.sim.Player {
 		this.d = d;
 		this.room_side = (double) room_side;
 
-		round_table = Utils.generate_round_table((double)room_side, (double)room_side, grid_length, fluctuation);
+		if (d > 910)
+			round_table = Utils.generate_round_table((double)room_side, (double)room_side, grid_length, fluctuation);
+		else
+			round_table = Utils.generate_round_table_double_spiral_line((double)room_side, (double)room_side, grid_length, fluctuation);
 
 		random = new Random();
 		occupier = new int[round_table.length];
+		vis = new boolean[round_table.length];
+
 		for (int i = 0; i < round_table.length; ++ i)
 			occupier[i] = -1;
 
@@ -135,7 +143,9 @@ public class RoundTablePlayer implements sqdance.sim.Player {
 					int l = found.get(i), r = found.get(i + 1);
 					in_round_table[l] = in_round_table[r] = false;
 
+					Arrays.fill(vis, false);
 					int dst = settleSoulMate(newd, position[l]);
+
 					if (dst == -1) {
 						for (int p = newd; p < round_table.length; p += 2) {
 							if (occupier[p] != -1 || occupier[p + 1] != -1) continue;
@@ -189,7 +199,9 @@ public class RoundTablePlayer implements sqdance.sim.Player {
 	}
 
 	// Soul mate origin and origin + 1, find an empty place after offset
+	// use max flow approach
 	private int settleSoulMate(int offset, int origin) {
+		vis[origin] = true;
 		int dst = -1;
 		for (int i = offset; i + 1 < round_table.length; i += 2) {
 			double dd = Utils.distance(round_table[origin][1], round_table[i][1]);
@@ -198,14 +210,15 @@ public class RoundTablePlayer implements sqdance.sim.Player {
 		}
 		//System.err.println("!" + origin + " " + dst + " " + distance(round_table[origin][1], round_table[dst][1]));
 		//System.err.println(distance(round_table[origin][1], round_table[dst][1]));
-		if (dst != -1 && occupier[dst] != -1) {
-			int k = settleSoulMate(dst + 2, dst);
-			if (k == -1) return -1;
-			target[occupier[dst]] = round_table[k][1];
-			target[occupier[dst + 1]] = round_table[k + 1][0];
-			occupier[k] = occupier[dst];
-			occupier[k + 1] = occupier[dst + 1];
-		}
+		if (dst == -1 || vis[dst]) return -1;
+
+		int k = settleSoulMate(offset, dst);
+		if (k == -1) return -1;
+		target[occupier[dst]] = round_table[k][1];
+		target[occupier[dst + 1]] = round_table[k + 1][0];
+		occupier[k] = occupier[dst];
+		occupier[k + 1] = occupier[dst + 1];
+
 		return dst;
 	}
 }
