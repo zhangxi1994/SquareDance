@@ -21,7 +21,8 @@ public class Player implements sqdance.sim.Player {
 	
 	private RoundTablePlayer p1 = new RoundTablePlayer();
 	private RoundTableGreedyPlayer p2 = new RoundTableGreedyPlayer();
-	private UltimatePlayer p3 = new UltimatePlayer();
+	//private UltimatePlayer p3 = new UltimatePlayer();
+	private CrowdedPlayer p3 = new CrowdedPlayer();
 	
 	private int d;
 	private int room_side;
