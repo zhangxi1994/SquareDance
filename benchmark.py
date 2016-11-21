@@ -20,6 +20,7 @@ for d in participants:
 		log_file = data_dir + str(d) + "_" + str(i) + ".log"
 		with open(log_file, "wb") as log:
 			subprocess.run(["java", "sqdance.sim.Simulator", "-d", str(d), "-g", player], stderr=log, stdout=FNULL) 
+			log.close()
 		with open(log_file, "rb") as log:
 			log.seek(-2, 2)
 			while log.read(1) != b"\n":
