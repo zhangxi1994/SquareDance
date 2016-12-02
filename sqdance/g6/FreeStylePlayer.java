@@ -24,7 +24,7 @@ public class FreeStylePlayer implements sqdance.sim.Player {
 	private Point[] queue;
 
 	// Heap of dancing/waiting queue;
-	private List<List<Integer>> dancingChild, waitingChild, child;
+	private List<List<Integer>> child;
 
     // simulation parameters
     private int d = -1;
@@ -48,7 +48,7 @@ public class FreeStylePlayer implements sqdance.sim.Player {
 		double offset_x = 0, offset_y = 0, bound_x = 20, bound_y = 20;
 		// Trick here
 		int height = tmpList.length / 200;
-		int i = 0, tot = 0;
+		int i = 0, tot = 0, lastTimeFilling = 1840;
 		for (int t = 0; ; ++ t) {
 			// trick again
 			int stepSize = (t % 2 == 1 ? height : 200) - (t + 1) / 2;
@@ -62,19 +62,26 @@ public class FreeStylePlayer implements sqdance.sim.Player {
 				if (t % 4 == 2) bound_y = Math.min(bound_y, tmpList[i][0].y);
 				if (t % 4 == 3) offset_x = Math.max(offset_x, tmpList[i][0].x);
 			}
+			if (tot + lastTimeFilling < d) continue;
 
-			Point[][] tmpList2 = Utils.generate_round_table(bound_y - offset_y - 2 * boundary, bound_x - offset_x - 2 * boundary, stage_gap, fluctuation);
+			//Point[][] tmpList2 = Utils.generate_round_table(bound_y - offset_y - 2 * boundary, bound_x - offset_x - 2 * boundary, stage_gap, fluctuation);
+			dancingQueue = Utils.generate_snake(bound_y - offset_y - 2 * boundary, bound_x - offset_x - 2 * boundary, stage_gap, fluctuation);
+			lastTimeFilling = dancingQueue.length;
 
 			//System.err.println(tmpList2.length);
-			if (tmpList2.length + tot >= d) {
-				waitingQueue = new Point[d - tmpList2.length];
+			if (dancingQueue.length + tot >= d) {
+				waitingQueue = new Point[d - dancingQueue.length];
 				for (int j = 0; j < waitingQueue.length; ++ j)
 					waitingQueue[j] = tmpList[j][0];
+				for (int j = 0; j < dancingQueue.length; ++ j)
+					dancingQueue[j] = new Point(dancingQueue[j].x + offset_x + boundary, dancingQueue[j].y + offset_y + boundary);
+					/*
 				dancingQueue = new Point[tmpList2.length];
 				for (int j = 0; j < dancingQueue.length; ++ j) {
 					Point p = tmpList2[j][1 - (j % 2)];
 					dancingQueue[j] = new Point(p.x + offset_x + boundary, p.y + offset_y + boundary);
 				}
+				*/
 				break;
 			}
 		}
@@ -159,11 +166,9 @@ public class FreeStylePlayer implements sqdance.sim.Player {
 	}
 
 	private void buildHeap() {
-//		dancingChild = new List<Integer>[dancingQueue.length];
-//		waitingChild = new List<Integer>[waitingQueue.length];
 		child = new ArrayList<List<Integer>>();
 		for (int i = 0; i < d; ++ i) {
-			List<Integer> list = new ArrayList<Integer>();
+			List<Integer> list = new LinkedList<Integer>();
 			for (int j = i + 1; j < d; ++ j) {
 				if (Utils.distance(queue[i], queue[j]) < 2.0) {
 					list.add(j);

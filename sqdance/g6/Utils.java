@@ -191,5 +191,50 @@ public class Utils {
 
 		return ret;
 	}
+
+	// line by line approach
+	public static Point[] generate_snake(double h, double w, double dist, double fluctuation) {
+		List<List<Point>> grid = draw_grid(h, w, dist / 2.0 + fluctuation * 2);
+		int numPoints = 0, width = 1000;
+		for (List<Point> line : grid) {
+			width = Math.min(line.size(), width);
+			numPoints += line.size();
+		}
+		//if (numPoints % 2 == 1) -- numPoints;
+		Point[] ret = new Point[numPoints];
+
+		int p = 0;
+		for (int i = 0; i < grid.size(); ++ i) {
+			if (i % 2 == 0) {
+				for (int j = 0; j < grid.get(i).size(); ++ j)
+					ret[p ++] = grid.get(i).get(j);
+			} else {
+				for (int j = grid.get(i).size() - 1; j >= 0; -- j)
+					ret[p ++] = grid.get(i).get(j);
+			}
+		}
+
+		for (int i = 0; i < numPoints; ++ i) {
+			if (i % 2 == 0) {
+				if (i != numPoints - 1)
+					ret[i] = add(ret[i], multiply(getDirection(ret[i + 1], ret[i]), 0.5 * fluctuation));
+			} else {
+				ret[i] = add(ret[i], multiply(getDirection(ret[i - 1], ret[i]), 0.5 * fluctuation));
+			}
+		}
+		for (int i = 0; i < numPoints; ++ i)
+			ret[i] = new Point(ret[i].y, ret[i].x);
+
+		final Comparator<Point> cmp = new Comparator<Point>() {
+				public int compare(Point a, Point b) {
+					final Point center = new Point(10, 10);
+					return Double.compare(distance(b, center), distance(a, center));
+				}
+			};
+
+		Arrays.sort(ret, cmp);
+
+		return ret;
+	}
 }
 
